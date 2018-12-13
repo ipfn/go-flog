@@ -1,0 +1,19 @@
+language: go
+go:
+ - "1.10.x"
+
+sudo: required
+install:
+ - go get -u github.com/stretchr/testify/assert
+ - go get -u golang.org/x/tools/cmd/cover
+ - go get -u github.com/mattn/goveralls
+ - go get -u winterdrache.de/goformat/goformat
+ - go get -u github.com/multiformats/go-multihash
+ - go get -u github.com/minio/sha256-simd
+
+script:
+ - diff -au <(goformat -s -d ./...) <(printf "")
+ - go get -u ./...
+ - go test -race -v ./...
+ - go test -race -v -covermode=atomic -coverprofile=coverage.out ./...
+ - $GOPATH/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
